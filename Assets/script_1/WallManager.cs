@@ -31,15 +31,16 @@ public class WallManager : MonoBehaviour
     {
         nextWall.x += 2;
     }
-    //public bool Arrived()
-    //{
-    //    if (Player.transform.position.x == nextWall.x)
-    //    {
-    //        return true;
-    //    }
-    //    else
-    //    {
-    //        return false;
-    //    }
-    //}
+
+    public bool EnableWall()
+    {
+        if (Player.transform.position.x == nextWall.x)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

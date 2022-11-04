@@ -9,6 +9,7 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public Vector3 jumppower_r;
     public Vector3 jumppower_u;
+    public Vector3 jumppower_d;
 
     public Vector2 curWall;
 
@@ -54,6 +55,10 @@ public class CharacterMovement_1 : MonoBehaviour
         if(Input.GetKeyUp(KeyCode.UpArrow))
         {
             rd.AddForce(jumppower_u, ForceMode2D.Impulse);
+        }
+        if(Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            rd.AddForce(jumppower_d, ForceMode2D.Impulse);
         }
     }
 
