@@ -13,6 +13,8 @@ public class PlayerControllor_E : MonoBehaviour
     public float rightTileToTile; //오른쪽 타일 간격
     public float updownTileToTile; //위아래 타일 간격
 
+    Animator anim;
+
     private float bgWidth;   //배경 스프라이트의 너비값
     private float bgHeight;  //배경 스프라이트의 높이값
 
@@ -22,6 +24,8 @@ public class PlayerControllor_E : MonoBehaviour
 
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
+
+        anim = GetComponent<Animator>();
 
         OtherBackgroundSetting();
     }
@@ -50,7 +54,6 @@ public class PlayerControllor_E : MonoBehaviour
             upCheck--;
 
             transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y - updownTileToTile);
-            Debug.Log(Mathf.Abs(transform.position.y) % 21.3);
             MainBackgroundDown();
             MainBackgroundForward();
         }
