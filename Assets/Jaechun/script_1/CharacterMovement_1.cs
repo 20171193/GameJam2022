@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CharacterMovement_1 : MonoBehaviour
 {
-
     [SerializeField] GameObject main_Background; //캐릭터가 위치하는 배경
     [SerializeField] GameObject[] other_Background;  //메인 배경을 기준으로 둘러싸는 배경
 
@@ -12,16 +11,20 @@ public class CharacterMovement_1 : MonoBehaviour
     private int downCheck = 0;
     private int rightCheck = 0;
 
+
     public float rightTileToTile; //오른쪽 타일 간격
     public float updownTileToTile; //위아래 타일 간격
 
     private float bgWidth;   //배경 스프라이트의 너비값
     private float bgHeight;  //배경 스프라이트의 높이값
 
-    Animator anim; //////////////////애니메이션
-
     private Transform tr;
+
     private Rigidbody2D rd;
+
+    private SpriteRenderer spr;
+
+    public Sprite dieSp;
 
     public Vector3 jumppower_r;
     public Vector3 jumppower_u;
@@ -34,15 +37,22 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public bool jumpable;
 
+                            // 현재 플레이어 상태
+    public bool jumping;    // 타이밍에 맞춘 경우 - true, 
+                            // 맞추지 못한 경우 - false.
+
     public int jumpArrow;   // 0 - 상, 1 - 중, 2 - 하
 
     public float cur_xpos;
     public float cur_ypos;
 
+    public bool anyEvent = false;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
+
     private void Awake()
     {
         tr = gameObject.GetComponent<Transform>();
         rd = gameObject.GetComponent<Rigidbody2D>();
+        spr = gameObject.GetComponent<SpriteRenderer>();    
 
         wallManager_st = wallManger_ob.GetComponent<WallManager>();
     }
@@ -55,18 +65,17 @@ public class CharacterMovement_1 : MonoBehaviour
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
 
-        anim = GetComponent<Animator>();   //////////////애니메이션
-
         OtherBackgroundSetting();
     }
 
     // Update is called once per frame
     void Update()
     {
-        Jump();
-        
-    }                                    
-
+        if (!anyEvent)
+        {
+            Jump();
+        }
+    }
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "StartWall")
@@ -85,33 +94,53 @@ public class CharacterMovement_1 : MonoBehaviour
 
     void Jump()
     {
-        if (jumpable)
-        {
-            //Debug.Log("jumping");
-            if (Input.GetKeyUp(KeyCode.UpArrow)     // 이동 - 상
-                && jumpArrow == 0)
-            {
+          //Debug.Log("jumping");
+          if (Input.GetKeyUp(KeyCode.UpArrow))     // 이동 - 상
+          { 
+                if (jumpable != true)
+                {
+                Debug.Log("타이밍 틀림");    
+                DieEvent();
+                    return;
+                }
+                if (jumpArrow != 0)
+                {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                    return;
+                }
+            Debug.Log("상단 이동");
                 rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
-                transform.position = new Vector3(cur_xpos, cur_ypos,0); // 점프 시작 위치 초기화
+                transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_u, ForceMode2D.Impulse);
                 wallManager_st.CheckInPlayer();
                 jumpable = false;
                 cur_xpos += wallManager_st.wallinterval_x;
                 cur_ypos += wallManager_st.wallinterval_y;
-
-                anim.SetBool("isJump", true);     ///////////애니메이션
-
+                upCheck++; //배경
+                downCheck--;  //배경
                 rightCheck++;
-                upCheck++;
-                downCheck--;
-                MainBackgroundUp();
-                MainBackgroundForward();
-            }
-            if (Input.GetKeyUp(KeyCode.RightArrow)  // 이동 - 중
-                && jumpArrow == 1)
+                MainBackgroundUp();  //배경
+                MainBackgroundForward();  //배경
+          }
+            if (Input.GetKeyUp(KeyCode.RightArrow))  // 이동 - 중
             {
-                rd.gravityScale = 1.5f;
+            if (jumpable != true)
+            {
+                Debug.Log("타이밍 틀림");
+                DieEvent();
+                return;
+            }
+            if (jumpArrow != 1)
+            {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                return;
+            }
+            Debug.Log("우측 이동");
+            
+            rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_r, ForceMode2D.Impulse);
@@ -119,15 +148,25 @@ public class CharacterMovement_1 : MonoBehaviour
                 jumpable = false;
                 cur_xpos += wallManager_st.wallinterval_x;
 
-                anim.SetBool("isJump", true);     ///////////////애니메이션
-
+                MainBackgroundForward(); //배경
                 rightCheck++;
-                MainBackgroundForward();
             }
-            if (Input.GetKeyUp(KeyCode.DownArrow) // 이동 - 하
-                && jumpArrow == 2)
+            else if (Input.GetKeyUp(KeyCode.DownArrow)) // 이동 - 하
             {
-                rd.gravityScale = 0.8f;
+            if (jumpable != true)
+            {
+                Debug.Log("타이밍 틀림");
+                DieEvent();
+                return;
+            }
+            if (jumpArrow != 2)
+            {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                return;
+            }
+            Debug.Log("하단 이동");
+            rd.gravityScale = 0.8f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_d, ForceMode2D.Impulse);
@@ -136,16 +175,31 @@ public class CharacterMovement_1 : MonoBehaviour
                 cur_xpos += wallManager_st.wallinterval_x;
                 cur_ypos -= wallManager_st.wallinterval_y;
 
-                anim.SetBool("isJump", true);     ///////////////애니메이션
-
+                downCheck++; //배경
+                upCheck--; //배경
                 rightCheck++;
-                downCheck++;
-                upCheck--;
-                MainBackgroundDown();
-                MainBackgroundForward();
+                MainBackgroundDown(); //배경
+                MainBackgroundForward(); //배경
             }
-        }
     }
+
+    public void DieEvent()
+    {
+        anyEvent = true;
+        spr.sprite = dieSp;
+        rd.velocity = Vector3.zero;
+        StartCoroutine(DieUI());
+        //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
+    }
+    IEnumerator DieUI()
+    {
+        yield return new WaitForSeconds(1.8f);
+        Debug.Log("die");
+        rd.gravityScale = 0.0f;
+        rd.velocity = Vector3.zero;
+    }
+
+
 
     public void MainBackgroundForward()
     {
@@ -188,7 +242,6 @@ public class CharacterMovement_1 : MonoBehaviour
             }
         }
     }
-
     public void OtherBackgroundSetting()
     {
         other_Background[0].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);

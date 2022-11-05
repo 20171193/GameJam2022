@@ -20,10 +20,17 @@ public class WallManager : MonoBehaviour
     public int wallinterval_x;    // 벽 사이 간격_x
     public int wallinterval_y;    // 벽 사이 간격_y
 
+    [SerializeField]
+    private int spawnCount_house;   // house 벽 생성 조건
+
+    private int spawnCount;
+
     [Header("벽 스프라이트 할당")]
     public Sprite[] wallSpr;    // 벽 이미지 (상, 우, 하, 집)
 
     private int rand;   // 벽이 가르키는 방향 랜덤 값
+
+    public GameObject houseWall;
 
     // Player
     public GameObject Player;
@@ -48,7 +55,7 @@ public class WallManager : MonoBehaviour
         // 수정 - 테스트용
         spawnWallPos = new Vector2(startWall[1].transform.position.x+5.0f, startWall[1].transform.position.y);
         Player.GetComponent<CharacterMovement_1>().cur_xpos = startWall[1].transform.position.x;
-        Player.GetComponent<CharacterMovement_1>().cur_ypos = startWall[1].transform.position.y+2.5f;
+        Player.GetComponent<CharacterMovement_1>().cur_ypos = startWall[1].transform.position.y+2.9f;
     }
 
     // Update is called once per frame
@@ -91,7 +98,7 @@ public class WallManager : MonoBehaviour
     }
 
     public void SpawnWall()
-    {
+    { 
         // 기존에 생성한 벽이 있다면 삭제
         if (destroyWall[0])
         {
@@ -102,15 +109,29 @@ public class WallManager : MonoBehaviour
 
             //Debug.Log("삭제");
         }
-        rand = Random.Range(0, 3);
+        //if (spawnCount == spawnCount_house)
+        //{
+        //    spawnCount = 0;
+        //    destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
+        //    destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
 
-        destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
-        destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
+        //    destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
+        //    destroyWall[1].GetComponent<Wall>().myArrow = rand;
+        //}
+        //else 
+        //{
+            rand = Random.Range(0, 3);
 
-        destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
-        destroyWall[1].GetComponent<Wall>().myArrow = rand;
+            destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
+            destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
 
-        UpdateInfo();
+            destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
+            destroyWall[1].GetComponent<Wall>().myArrow = rand;
+
+            spawnCount++;
+
+            UpdateInfo();
+        //}
     }
 
 }
