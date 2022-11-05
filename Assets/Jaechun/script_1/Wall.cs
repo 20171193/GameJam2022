@@ -67,13 +67,15 @@ public class Wall : MonoBehaviour
         }
     }
 
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    if (collision.gameObject.tag == "Player")
-    //    {
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
             
-    //    }
-    //}
+                player.GetComponent<Animator>().SetBool("isJump", false);    /////////////////애니메이션
+        }
+    }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Player")
