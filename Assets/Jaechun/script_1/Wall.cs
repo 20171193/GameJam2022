@@ -11,6 +11,7 @@ public class Wall : MonoBehaviour
     private BoxCollider2D col;
 
     public int myArrow;     // 0-╩С, 1-©Л, 2-го
+    public int score = 100;
 
     GameObject player;
 
@@ -67,6 +68,12 @@ public class Wall : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+            player.GetComponent<Animator>().SetBool("isJump", false);
+    }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Player")
@@ -88,6 +95,7 @@ public class Wall : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log("exit trigger");
+
             player = collision.gameObject;
             //player.GetComponent<Rigidbody2D>().velocity = Vector3.down*2.0f;
             player.GetComponent<CharacterMovement_1>().jumpable = false;
