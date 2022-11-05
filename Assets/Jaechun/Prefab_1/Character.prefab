@@ -146,8 +146,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c5491e9b0f453b43882eee2920b0916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  main_Background: {fileID: 0}
+  other_Background: []
+  rightTileToTile: 0
+  updownTileToTile: 0
+  anim: {fileID: 0}
   jumppower_r: {x: 0, y: 0, z: 0}
   jumppower_u: {x: 0, y: 0, z: 0}
   jumppower_d: {x: 0, y: 0, z: 0}
   wallManger_ob: {fileID: 0}
-  wallManager_st: {fileID: 0}
+  jumpable: 0
+  jumping: 0
+  jumpArrow: 0
+  cur_xpos: 0
+  cur_ypos: 0
+  anyEvent: 0

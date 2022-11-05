@@ -24,7 +24,7 @@ public class CharacterMovement_1 : MonoBehaviour
 
     private SpriteRenderer spr;
 
-    public Sprite dieSp;
+    public Animator anim;
 
     public Vector3 jumppower_r;
     public Vector3 jumppower_u;
@@ -64,6 +64,8 @@ public class CharacterMovement_1 : MonoBehaviour
 
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
+
+        anim = GetComponent<Animator>();
 
         OtherBackgroundSetting();
     }
@@ -109,7 +111,8 @@ public class CharacterMovement_1 : MonoBehaviour
                 DieEvent();
                     return;
                 }
-            Debug.Log("상단 이동");
+            anim.SetBool("IsJump", true);
+                Debug.Log("상단 이동");
                 rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -139,7 +142,8 @@ public class CharacterMovement_1 : MonoBehaviour
                 return;
             }
             Debug.Log("우측 이동");
-            
+            anim.SetBool("IsJump", true);
+
             rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -166,6 +170,8 @@ public class CharacterMovement_1 : MonoBehaviour
                 return;
             }
             Debug.Log("하단 이동");
+            anim.SetBool("IsJump", true);
+
             rd.gravityScale = 0.8f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -186,8 +192,8 @@ public class CharacterMovement_1 : MonoBehaviour
     public void DieEvent()
     {
         anyEvent = true;
-        spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
+        anim.SetBool("IsDead", true);
         StartCoroutine(DieUI());
         //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
     }

@@ -66,7 +66,13 @@ public class Wall : MonoBehaviour
             spr.color = new Color(255.0f,0.0f, 0.0f, myAlpha);
         }
     }
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Player")
+        {
+            collision.GetComponent<Animator>().SetBool("IsJump", false);
+        }
+    }
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Player")
@@ -95,6 +101,7 @@ public class Wall : MonoBehaviour
             if(player.transform.position.x == transform.position.x              // 플레이어가 벽 위에 있고
                 && transform.position.y + 2.5 >= player.transform.position.y)   // 벽에서 떨어지는 상황
             {
+
                 // 사망 이벤트 실행
                 // 후에 애니메이션 출력으로 대체
                 SetAlpha(false);

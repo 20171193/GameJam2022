@@ -37,7 +37,6 @@ public class WallManager : MonoBehaviour
 
     private void Awake()
     {
-        
     }
 
     // Start is called before the first frame update
@@ -93,6 +92,7 @@ public class WallManager : MonoBehaviour
 
     public void CheckInPlayer()
     {
+
         // 플레이어가 입력에 성공한 경우
         SpawnWall();
     }
