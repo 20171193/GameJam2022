@@ -4,141 +4,104 @@ using UnityEngine;
 
 public class PlayerControllor_E : MonoBehaviour
 {
-    [SerializeField] GameObject f_gameObject;
-    [SerializeField] GameObject[] other_gameObject;
+    [SerializeField] GameObject main_Background; //캐릭터가 위치하는 배경
+    [SerializeField] GameObject[] other_Background;  //메인 배경을 기준으로 둘러싸는 배경
 
-    private int upCheck = 0;
+    private int upCheck = 0;  
     private int downCheck = 0;
 
-    public bool upRight;
-    public bool downRight;
-    public bool right;
-    public bool up;
-    public bool down;
+    public float rightTileToTile; //오른쪽 타일 간격
+    public float updownTileToTile; //위아래 타일 간격
 
-    private float bgi_w;
-    private float bgi_h;
+    Animator anim;
+
+    private float bgWidth;   //배경 스프라이트의 너비값
+    private float bgHeight;  //배경 스프라이트의 높이값
 
     void Start()
     {
-        f_gameObject.transform.position = new Vector3(0, 0, 0);
-        OtherSetting();
+        main_Background.transform.position = new Vector3(0, 0, 0);
 
-        bgi_w = f_gameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.x;
+        bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
+        bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
+
+        anim = GetComponent<Animator>();
+
+        OtherBackgroundSetting();
     }
 
     private void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            Debug.Log("right");
-            if (right)
-            {
-                transform.position = new Vector2(transform.position.x + 2f, transform.position.y);
-                ForwardCheck();
-            }
+            transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y);
+            MainBackgroundForward();
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            Debug.Log("up");
             upCheck++;
+            downCheck--;
 
-            if (up)
-            {
-                transform.position = new Vector2(transform.position.x + 2f, transform.position.y + 1f);
-                UpCheck();
-                ForwardCheck();
-            }
+            transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y + updownTileToTile);
+            MainBackgroundUp();
+            MainBackgroundForward();
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            Debug.Log("down");
-            downCheck++; 
+            downCheck++;
+            upCheck--;
 
-            if (down)
+            transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y - updownTileToTile);
+            MainBackgroundDown();
+            MainBackgroundForward();
+        }
+    }
+
+    public void MainBackgroundForward()
+    {
+        if (transform.position.x % bgWidth < rightTileToTile)
+        {
+            main_Background.transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
+            OtherBackgroundSetting();
+        }
+    }
+
+    public void MainBackgroundUp()
+    {
+        if (upCheck >= (bgHeight/updownTileToTile)-1)
+        {
+            if (Mathf.Abs(transform.position.y) % bgHeight < updownTileToTile)
             {
-                transform.position = new Vector2(transform.position.x + 2f, transform.position.y - 1f);
-                Debug.Log(Mathf.Abs(transform.position.y) % 21.3);
-                DownCheck();
-                ForwardCheck();
-            }
-        }
-    }
-
-
-
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Right"))
-        {
-            right = true;
-        }
-        else
-        {
-            right = false;
-        }
-
-        if (other.CompareTag("Up"))
-        {
-            up = true;
-        }
-        else
-        {
-            up = false;
-        }
-
-        if (other.CompareTag("Down"))
-        {
-            down = true;
-        }
-        else
-        {
-            down = false;
-        }
-    }
-
-    public void ForwardCheck()
-    {
-        if (transform.position.x % 40 < 2)
-        {
-            f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y, 0);
-            OtherSetting();
-        }
-    }
-    public void UpCheck()
-    {
-        if (upCheck > 5)
-        {
-            if (Mathf.Abs(transform.position.y) % 21.3 < 1)
-            {
-                f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
-                OtherSetting();
+                main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
+                OtherBackgroundSetting();
                 upCheck = 0;
-            }
-        }
-    }
-    public void DownCheck()
-    {
-        if (downCheck > 5)
-        {
-            if (Mathf.Abs(transform.position.y) % 21.3 < 1)
-            {
-                f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
-                OtherSetting();
                 downCheck = 0;
             }
         }
     }
 
-    public void OtherSetting()
+    public void MainBackgroundDown()
     {
-        other_gameObject[0].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
-        other_gameObject[1].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y + 21.3f, 0);
-        other_gameObject[2].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y, 0);
-        other_gameObject[3].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
-        other_gameObject[4].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y - 21.3f, 0);
+        if (downCheck >= (bgHeight / updownTileToTile)-1)
+        {
+            if (Mathf.Abs(transform.position.y) % bgHeight < updownTileToTile)
+            {
+                main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
+                OtherBackgroundSetting();
+                downCheck = 0;
+                upCheck = 0;
+            }
+        }
+    }
+
+    public void OtherBackgroundSetting()
+    {
+        other_Background[0].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
+        other_Background[1].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y + bgHeight, 0);
+        other_Background[2].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
+        other_Background[3].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
+        other_Background[4].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y - bgHeight, 0);
     }
 }
