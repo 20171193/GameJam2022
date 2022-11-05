@@ -9,6 +9,8 @@ public class CharacterMovement_1 : MonoBehaviour
 
     private int upCheck = 0;
     private int downCheck = 0;
+    private int rightCheck = 0;
+
 
     public float rightTileToTile; //오른쪽 타일 간격
     public float updownTileToTile; //위아래 타일 간격
@@ -17,7 +19,12 @@ public class CharacterMovement_1 : MonoBehaviour
     private float bgHeight;  //배경 스프라이트의 높이값
 
     private Transform tr;
+
     private Rigidbody2D rd;
+
+    private SpriteRenderer spr;
+
+    public Sprite dieSp;
 
     public Vector3 jumppower_r;
     public Vector3 jumppower_u;
@@ -30,15 +37,22 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public bool jumpable;
 
+                            // 현재 플레이어 상태
+    public bool jumping;    // 타이밍에 맞춘 경우 - true, 
+                            // 맞추지 못한 경우 - false.
+
     public int jumpArrow;   // 0 - 상, 1 - 중, 2 - 하
 
     public float cur_xpos;
     public float cur_ypos;
 
+    public bool anyEvent = false;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
+
     private void Awake()
     {
         tr = gameObject.GetComponent<Transform>();
         rd = gameObject.GetComponent<Rigidbody2D>();
+        spr = gameObject.GetComponent<SpriteRenderer>();    
 
         wallManager_st = wallManger_ob.GetComponent<WallManager>();
     }
@@ -57,7 +71,10 @@ public class CharacterMovement_1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Jump();
+        if (!anyEvent)
+        {
+            Jump();
+        }
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -77,30 +94,53 @@ public class CharacterMovement_1 : MonoBehaviour
 
     void Jump()
     {
-        if (jumpable)
-        {
-            //Debug.Log("jumping");
-            if (Input.GetKeyUp(KeyCode.UpArrow)     // 이동 - 상
-                && jumpArrow == 0)
-            {
+          //Debug.Log("jumping");
+          if (Input.GetKeyUp(KeyCode.UpArrow))     // 이동 - 상
+          { 
+                if (jumpable != true)
+                {
+                Debug.Log("타이밍 틀림");    
+                DieEvent();
+                    return;
+                }
+                if (jumpArrow != 0)
+                {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                    return;
+                }
+            Debug.Log("상단 이동");
                 rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
-                transform.position = new Vector3(cur_xpos, cur_ypos,0); // 점프 시작 위치 초기화
+                transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_u, ForceMode2D.Impulse);
                 wallManager_st.CheckInPlayer();
                 jumpable = false;
                 cur_xpos += wallManager_st.wallinterval_x;
                 cur_ypos += wallManager_st.wallinterval_y;
-
                 upCheck++; //배경
                 downCheck--;  //배경
+                rightCheck++;
                 MainBackgroundUp();  //배경
                 MainBackgroundForward();  //배경
-            }
-            if (Input.GetKeyUp(KeyCode.RightArrow)  // 이동 - 중
-                && jumpArrow == 1)
+          }
+            if (Input.GetKeyUp(KeyCode.RightArrow))  // 이동 - 중
             {
-                rd.gravityScale = 1.5f;
+            if (jumpable != true)
+            {
+                Debug.Log("타이밍 틀림");
+                DieEvent();
+                return;
+            }
+            if (jumpArrow != 1)
+            {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                return;
+            }
+            Debug.Log("우측 이동");
+            
+            rd.gravityScale = 1.5f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_r, ForceMode2D.Impulse);
@@ -109,11 +149,24 @@ public class CharacterMovement_1 : MonoBehaviour
                 cur_xpos += wallManager_st.wallinterval_x;
 
                 MainBackgroundForward(); //배경
+                rightCheck++;
             }
-            if (Input.GetKeyUp(KeyCode.DownArrow) // 이동 - 하
-                && jumpArrow == 2)
+            else if (Input.GetKeyUp(KeyCode.DownArrow)) // 이동 - 하
             {
-                rd.gravityScale = 0.8f;
+            if (jumpable != true)
+            {
+                Debug.Log("타이밍 틀림");
+                DieEvent();
+                return;
+            }
+            if (jumpArrow != 2)
+            {
+                Debug.Log("화살표 틀림");
+                DieEvent();
+                return;
+            }
+            Debug.Log("하단 이동");
+            rd.gravityScale = 0.8f;
                 rd.velocity = Vector3.zero;
                 transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
                 rd.AddForce(jumppower_d, ForceMode2D.Impulse);
@@ -124,19 +177,41 @@ public class CharacterMovement_1 : MonoBehaviour
 
                 downCheck++; //배경
                 upCheck--; //배경
+                rightCheck++;
                 MainBackgroundDown(); //배경
                 MainBackgroundForward(); //배경
             }
-        }
     }
+
+    public void DieEvent()
+    {
+        anyEvent = true;
+        spr.sprite = dieSp;
+        rd.velocity = Vector3.zero;
+        StartCoroutine(DieUI());
+        //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
+    }
+    IEnumerator DieUI()
+    {
+        yield return new WaitForSeconds(1.8f);
+        Debug.Log("die");
+        rd.gravityScale = 0.0f;
+        rd.velocity = Vector3.zero;
+    }
+
 
 
     public void MainBackgroundForward()
     {
-        if (transform.position.x % bgWidth < rightTileToTile)
+        if (rightCheck >= (bgWidth / rightTileToTile) - 1)
         {
-            main_Background.transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
-            OtherBackgroundSetting();
+            if (transform.position.x % bgWidth < rightTileToTile)
+            {
+                main_Background.transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
+                OtherBackgroundSetting();
+
+                rightCheck = 0;
+            }
         }
     }
 
