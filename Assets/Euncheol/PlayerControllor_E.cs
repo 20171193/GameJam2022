@@ -23,7 +23,7 @@ public class PlayerControllor_E : MonoBehaviour
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
 
-        OtherSetting();
+        OtherBackgroundSetting();
     }
 
     private void Update()
@@ -31,7 +31,7 @@ public class PlayerControllor_E : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y);
-            ForwardCheck();
+            MainBackgroundForward();
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -40,8 +40,8 @@ public class PlayerControllor_E : MonoBehaviour
             downCheck--;
 
             transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y + updownTileToTile);
-            UpCheck();
-            ForwardCheck();
+            MainBackgroundUp();
+            MainBackgroundForward();
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -51,47 +51,49 @@ public class PlayerControllor_E : MonoBehaviour
 
             transform.position = new Vector2(transform.position.x + rightTileToTile, transform.position.y - updownTileToTile);
             Debug.Log(Mathf.Abs(transform.position.y) % 21.3);
-            DownCheck();
-            ForwardCheck();
+            MainBackgroundDown();
+            MainBackgroundForward();
         }
     }
 
-    public void ForwardCheck()
+    public void MainBackgroundForward()
     {
         if (transform.position.x % bgWidth < rightTileToTile)
         {
             main_Background.transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
-            OtherSetting();
+            OtherBackgroundSetting();
         }
     }
-    public void UpCheck()
+
+    public void MainBackgroundUp()
     {
         if (upCheck >= (bgHeight/updownTileToTile)-1)
         {
             if (Mathf.Abs(transform.position.y) % bgHeight < updownTileToTile)
             {
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
-                OtherSetting();
+                OtherBackgroundSetting();
                 upCheck = 0;
                 downCheck = 0;
             }
         }
     }
-    public void DownCheck()
+
+    public void MainBackgroundDown()
     {
         if (downCheck >= (bgHeight / updownTileToTile)-1)
         {
             if (Mathf.Abs(transform.position.y) % bgHeight < updownTileToTile)
             {
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
-                OtherSetting();
+                OtherBackgroundSetting();
                 downCheck = 0;
                 upCheck = 0;
             }
         }
     }
 
-    public void OtherSetting()
+    public void OtherBackgroundSetting()
     {
         other_Background[0].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
         other_Background[1].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y + bgHeight, 0);
