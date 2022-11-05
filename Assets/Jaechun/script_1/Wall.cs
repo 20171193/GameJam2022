@@ -11,6 +11,7 @@ public class Wall : MonoBehaviour
     private BoxCollider2D col;
 
     public int myArrow;     // 0-상, 1-우, 2-하
+    public int score = 100;
 
     GameObject player;
 
@@ -66,13 +67,13 @@ public class Wall : MonoBehaviour
             spr.color = new Color(255.0f,0.0f, 0.0f, myAlpha);
         }
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "Player")
-        {
-            collision.GetComponent<Animator>().SetBool("IsJump", false);
-        }
+        if (collision.gameObject.tag == "Player")
+            player.GetComponent<Animator>().SetBool("isJump", false);
     }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Player")
@@ -94,6 +95,7 @@ public class Wall : MonoBehaviour
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log("exit trigger");
+
             player = collision.gameObject;
             //player.GetComponent<Rigidbody2D>().velocity = Vector3.down*2.0f;
             player.GetComponent<CharacterMovement_1>().jumpable = false;
@@ -101,7 +103,6 @@ public class Wall : MonoBehaviour
             if(player.transform.position.x == transform.position.x              // 플레이어가 벽 위에 있고
                 && transform.position.y + 2.5 >= player.transform.position.y)   // 벽에서 떨어지는 상황
             {
-
                 // 사망 이벤트 실행
                 // 후에 애니메이션 출력으로 대체
                 SetAlpha(false);

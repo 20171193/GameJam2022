@@ -13,9 +13,16 @@ public class SpacebarBlink : MonoBehaviour
     public float spacebarOnSize = 0.5f;
     public float spacebarResetSpeed = 0.2f;
 
+    public AudioSource audioSource;
+
     private Color color;
 
     public Image image;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
@@ -43,6 +50,7 @@ public class SpacebarBlink : MonoBehaviour
             spaceOn = true;
             GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
             transform.localScale = Vector3.one * spacebarOnSize;
+            audioSource.Play();
         }
 
 
@@ -55,12 +63,12 @@ public class SpacebarBlink : MonoBehaviour
                 transform.localScale = Vector3.one;
             }
 
-            if (color.a < 1)
+            if (color.a < 2)
             {
-                color.a += Time.deltaTime;
+                color.a += Time.deltaTime/2;
             }
             else
-                SceneManager.LoadScene("Scene_EC");
+                SceneManager.LoadScene("MainTestScene");
 
             image.color = color;
         }

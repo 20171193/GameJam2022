@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Euncheol/Scene_EC.unity
     guid: bcbb3a60c754c5b48858e133eb7c0250
+  - enabled: 1
+    path: Assets/Jaechun/Scene_1/MainTestScene.unity
+    guid: 3f1d3da881772504e9165a7dd4d3ca04
   m_configObjects: {}
