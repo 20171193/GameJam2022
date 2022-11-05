@@ -16,14 +16,20 @@ public class PlayerControllor_E : MonoBehaviour
     public bool up;
     public bool down;
 
+    private float bgi_w;
+    private float bgi_h;
+
     void Start()
     {
         f_gameObject.transform.position = new Vector3(0, 0, 0);
         OtherSetting();
+
+        bgi_w = f_gameObject.GetComponent<SpriteRenderer>().sprite.bounds.size.x;
     }
 
     private void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Debug.Log("right");
