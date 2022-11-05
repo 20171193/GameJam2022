@@ -56,12 +56,12 @@ public class SpacebarBlink : MonoBehaviour
 
         if (spaceOn)
         {
-            color = image.color;
             if (time > spacebarResetSpeed)
             {
                 time = 0;
                 transform.localScale = Vector3.one;
             }
+            color = image.color;
 
             if (color.a < 2)
             {

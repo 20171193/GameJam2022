@@ -16,7 +16,7 @@ public class FadeEffect_EC : MonoBehaviour
     {
         Color color = image.color;
 
-        if(color.a < 1)
+        if(color.a < 0.5)
         {
             color.a += Time.deltaTime;
         }

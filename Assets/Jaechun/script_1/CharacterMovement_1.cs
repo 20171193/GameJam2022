@@ -7,6 +7,10 @@ public class CharacterMovement_1 : MonoBehaviour
     [SerializeField] GameObject main_Background; //캐릭터가 위치하는 배경
     [SerializeField] GameObject[] other_Background;  //메인 배경을 기준으로 둘러싸는 배경
 
+    public GameObject fadeOut; //////사망시 페이드 아웃
+    public GameObject deadMenu; //////결과창
+    public GameObject menuTool; //////결과창 타이틀과 버튼
+
     private int upCheck = 0;
     private int downCheck = 0;
     private int rightCheck = 0;
@@ -81,7 +85,10 @@ public class CharacterMovement_1 : MonoBehaviour
         {
             Jump();
         }
+
+
     }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "StartWall")
@@ -159,8 +166,8 @@ public class CharacterMovement_1 : MonoBehaviour
             jumpable = false;
             cur_xpos += wallManager_st.wallinterval_x;
 
-            MainBackgroundForward(); //배경
             rightCheck++;
+            MainBackgroundForward(); //배경
         }
 
         if (Input.GetKeyUp(KeyCode.DownArrow)) // 이동 - 하
@@ -204,12 +211,32 @@ public class CharacterMovement_1 : MonoBehaviour
         spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
         StartCoroutine(DieUI());
+        fadeOut.gameObject.SetActive(true);      /////화면 어둡게 설정
+        anim.SetBool("isDead", true);            /////dead애니메이션
+        //Time.timeScale = 0;
+        Invoke("Pause", 1f);
         //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
     }
 
+    public void Pause()
+    {
+        //Time.timeScale = 0f;
+        gameObject.SetActive(false);
+        deadMenu.gameObject.SetActive(true);
+        Invoke("ToolOn", 1f);
+    }
+
+    public void ToolOn()
+    {
+        menuTool.gameObject.SetActive(true);
+    }
+
+    
+
+
     IEnumerator DieUI()
     {
-        yield return new WaitForSeconds(1.8f);
+        yield return new WaitForSeconds(1f);
         Debug.Log("die");
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
@@ -244,6 +271,7 @@ public class CharacterMovement_1 : MonoBehaviour
                 OtherBackgroundSetting();
                 upCheck = 0;
                 downCheck = 0;
+                rightCheck = 0;
             }
         }
     }
@@ -258,6 +286,7 @@ public class CharacterMovement_1 : MonoBehaviour
                 OtherBackgroundSetting();
                 downCheck = 0;
                 upCheck = 0;
+                rightCheck = 0;
             }
         }
     }
