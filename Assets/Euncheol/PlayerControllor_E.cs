@@ -5,26 +5,19 @@ using UnityEngine;
 public class PlayerControllor_E : MonoBehaviour
 {
     [SerializeField] GameObject f_gameObject;
-    /*[SerializeField] GameObject s_gameObject;
-    [SerializeField] GameObject t_gameObject;
-    [SerializeField] GameObject u_gameObject;
-    [SerializeField] GameObject d_gameObject;*/
     [SerializeField] GameObject[] other_gameObject;
 
-    //private int fowardCheck = 0;
-    //private int updownCheck = 0;
+    private int upCheck = 0;
+    private int downCheck = 0;
 
-    //private bool rightCheck = false;
     public bool upRight;
     public bool downRight;
     public bool right;
     public bool up;
     public bool down;
 
-    // Start is called before the first frame update
     void Start()
     {
-        //other_gameObject = new GameObject[];
         f_gameObject.transform.position = new Vector3(0, 0, 0);
         OtherSetting();
     }
@@ -44,6 +37,7 @@ public class PlayerControllor_E : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             Debug.Log("up");
+            upCheck++;
 
             if (up)
             {
@@ -56,9 +50,12 @@ public class PlayerControllor_E : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             Debug.Log("down");
+            downCheck++; 
+
             if (down)
             {
                 transform.position = new Vector2(transform.position.x + 2f, transform.position.y - 1f);
+                Debug.Log(Mathf.Abs(transform.position.y) % 21.3);
                 DownCheck();
                 ForwardCheck();
             }
@@ -107,30 +104,35 @@ public class PlayerControllor_E : MonoBehaviour
     }
     public void UpCheck()
     {
-        if (transform.position.y % 21.3 < 1)
+        if (upCheck > 5)
         {
-            f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
-            OtherSetting();
+            if (Mathf.Abs(transform.position.y) % 21.3 < 1)
+            {
+                f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
+                OtherSetting();
+                upCheck = 0;
+            }
         }
     }
     public void DownCheck()
     {
-        if (transform.position.y % 21.3 < 1)
+        if (downCheck > 5)
         {
-            f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
-            OtherSetting();
-        } 
+            if (Mathf.Abs(transform.position.y) % 21.3 < 1)
+            {
+                f_gameObject.transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
+                OtherSetting();
+                downCheck = 0;
+            }
+        }
     }
 
     public void OtherSetting()
     {
-        other_gameObject[0].transform.position = new Vector3(f_gameObject.transform.position.x - 40f, f_gameObject.transform.position.y + 21.3f, 0);
-        other_gameObject[1].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
-        other_gameObject[2].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y + 21.3f, 0);
-        other_gameObject[3].transform.position = new Vector3(f_gameObject.transform.position.x - 40f, f_gameObject.transform.position.y, 0);
-        other_gameObject[4].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y, 0);
-        other_gameObject[5].transform.position = new Vector3(f_gameObject.transform.position.x - 40f, f_gameObject.transform.position.y - 21.3f, 0);
-        other_gameObject[6].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
-        other_gameObject[7].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y - 21.3f, 0);
+        other_gameObject[0].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y + 21.3f, 0);
+        other_gameObject[1].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y + 21.3f, 0);
+        other_gameObject[2].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y, 0);
+        other_gameObject[3].transform.position = new Vector3(f_gameObject.transform.position.x, f_gameObject.transform.position.y - 21.3f, 0);
+        other_gameObject[4].transform.position = new Vector3(f_gameObject.transform.position.x + 40f, f_gameObject.transform.position.y - 21.3f, 0);
     }
 }
