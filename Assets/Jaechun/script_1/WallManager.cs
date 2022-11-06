@@ -112,13 +112,16 @@ public class WallManager : MonoBehaviour
             if (destroyWall[0])
             {
                 Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
-                // UI 이벤트 호출
+                //UI 이벤트 호출
                 UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x, destroyWall[1].transform.position.y, 0.0f));
 
                 Destroy(destroyWall[1]);
 
                 System.Array.Clear(destroyWall, 0, destroyWall.Length);
             }
+
+            spawnWallPos = new Vector2(spawnWallPos.x, spawnWallPos.y - 1.1f);
+
             destroyWall[0] = Instantiate(spawnWall[2], spawnWallPos, Quaternion.identity);
             destroyWall[1] = Instantiate(spawnWall[3], spawnWallPos, Quaternion.identity);
             

@@ -33,9 +33,13 @@ public class UIManager : MonoBehaviour
         HouseBGI.SetActive(true);
 
         arrowimg[0].GetComponent<Image>().sprite = arrowSpr[first];
+        arrowimg[0].GetComponent<Image>().color = new Color(255 / 255f, 255 / 255f, 255 / 255f, 255 / 255);
         arrowimg[1].GetComponent<Image>().sprite = arrowSpr[second];
+        arrowimg[1].GetComponent<Image>().color = new Color(255 / 255f, 255 / 255f, 255 / 255f, 255 / 255);
         arrowimg[2].GetComponent<Image>().sprite = arrowSpr[third];
+        arrowimg[2].GetComponent<Image>().color = new Color(255 / 255f, 255 / 255f, 255 / 255f, 255 / 255);
         arrowimg[3].GetComponent<Image>().sprite = arrowSpr[forth];
+        arrowimg[3].GetComponent<Image>().color = new Color(255 / 255f, 255 / 255f, 255 / 255f, 255 / 255);
     }
 
     public void RenderScoreImage(Vector3 pos)

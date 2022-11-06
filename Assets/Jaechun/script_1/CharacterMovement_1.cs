@@ -271,6 +271,7 @@ public class CharacterMovement_1 : MonoBehaviour
         uiManager.GetComponent<UIManager>().RenderHouseArrow(
             curHouse.GetComponent<House>().randomArrow[0], curHouse.GetComponent<House>().randomArrow[1],
             curHouse.GetComponent<House>().randomArrow[2], curHouse.GetComponent<House>().myArrow);
+
         
     }
     public void HouseKeyCheck()
@@ -287,9 +288,12 @@ public class CharacterMovement_1 : MonoBehaviour
             Debug.Log("dd");
             if (inputCount >= 3 && 0 == curHouse.GetComponent<House>().myArrow)
             {
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
-
+                
                 Debug.Log("house done");
                 inputCount = 0;
 
@@ -317,6 +321,8 @@ public class CharacterMovement_1 : MonoBehaviour
             }
             else if(inputCount < 3 && 0 == curHouse.GetComponent<House>().randomArrow[inputCount])
             {
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
                 Debug.Log("key done");
                 inputCount++;
                 return;
@@ -331,10 +337,14 @@ public class CharacterMovement_1 : MonoBehaviour
         {
             if (inputCount >= 3 && 1 == curHouse.GetComponent<House>().myArrow)
             {
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
 
                 uiManager.GetComponent<UIManager>().HouseBGI.SetActive(false);
+
 
                 Debug.Log("house done");
                 inputCount = 0;
@@ -359,6 +369,8 @@ public class CharacterMovement_1 : MonoBehaviour
             else if (inputCount < 3 && 1 == curHouse.GetComponent<House>().randomArrow[inputCount])
             {
                 Debug.Log("key done");
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
                 inputCount++;
                 return;
             }
@@ -372,6 +384,9 @@ public class CharacterMovement_1 : MonoBehaviour
         {
             if (inputCount >= 3 && 2 == curHouse.GetComponent<House>().myArrow)
             {
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
 
@@ -403,6 +418,9 @@ public class CharacterMovement_1 : MonoBehaviour
             }
             if (inputCount < 3 && 2 == curHouse.GetComponent<House>().randomArrow[inputCount])
             {
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
+                uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+
                 Debug.Log("key done");
                 inputCount++;
                 return;

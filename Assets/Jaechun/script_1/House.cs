@@ -18,9 +18,12 @@ public class House : MonoBehaviour
 
     public GameObject player;
 
+    public Animator anim;
+
     // Start is called before the first frame update
     void Start()
     {
+        anim = gameObject.GetComponent<Animator>();
         spr = gameObject.GetComponent<SpriteRenderer>();
         col = gameObject.GetComponent<BoxCollider2D>();
 
