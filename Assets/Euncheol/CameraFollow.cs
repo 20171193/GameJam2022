@@ -14,7 +14,6 @@ public class CameraFollow : MonoBehaviour
     {
         FollowPlayer();
 
-
     }
 
     public void FollowPlayer()

@@ -136,7 +136,7 @@ public class CharacterMovement_1 : MonoBehaviour
             cur_ypos += wallManager_st.wallinterval_y;
             upCheck++; //배경
             downCheck--;  //배경
-            rightCheck++;
+            rightCheck++;                //////////////////////
             MainBackgroundUp();  //배경
             MainBackgroundForward();  //배경
         }
@@ -166,7 +166,7 @@ public class CharacterMovement_1 : MonoBehaviour
             jumpable = false;
             cur_xpos += wallManager_st.wallinterval_x;
 
-            rightCheck++;
+            rightCheck++;                         //////////////////////
             MainBackgroundForward(); //배경
         }
 
@@ -214,11 +214,11 @@ public class CharacterMovement_1 : MonoBehaviour
         fadeOut.gameObject.SetActive(true);      /////화면 어둡게 설정
         anim.SetBool("isDead", true);            /////dead애니메이션
         //Time.timeScale = 0;
-        Invoke("Pause", 1f);
+        Invoke("Pause", 1f);                    //////////////////////
         //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
     }
 
-    public void Pause()
+    public void Pause()                                //////////////////////
     {
         //Time.timeScale = 0f;
         gameObject.SetActive(false);
@@ -229,14 +229,14 @@ public class CharacterMovement_1 : MonoBehaviour
     public void ToolOn()
     {
         menuTool.gameObject.SetActive(true);
-    }
+    }                                                //////////////////////
 
-    
+
 
 
     IEnumerator DieUI()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f);          //값수정
         Debug.Log("die");
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
@@ -297,6 +297,6 @@ public class CharacterMovement_1 : MonoBehaviour
         other_Background[2].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
         other_Background[3].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
         other_Background[4].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y - bgHeight, 0);
-        other_Background[5].transform.position = new Vector3(main_Background.transform.position.x + bgWidth*2, main_Background.transform.position.y, 0);
+        other_Background[5].transform.position = new Vector3(main_Background.transform.position.x + bgWidth*2, main_Background.transform.position.y, 0);             //////////////////////
     }                                                                                                     
 }
