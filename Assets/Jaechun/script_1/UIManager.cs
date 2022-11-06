@@ -13,16 +13,31 @@ public class UIManager : MonoBehaviour
 
     public Image scoreImage;
 
+    public GameObject HouseBGI;
+
+    public GameObject[] arrowimg;
+
+    public Sprite[] arrowSpr;
+
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
     }
+    public void RenderHouseArrow(int first, int second, int third, int forth)
+    {
+        HouseBGI.SetActive(true);
+
+        arrowimg[0].GetComponent<Image>().sprite = arrowSpr[first];
+        arrowimg[1].GetComponent<Image>().sprite = arrowSpr[second];
+        arrowimg[2].GetComponent<Image>().sprite = arrowSpr[third];
+        arrowimg[3].GetComponent<Image>().sprite = arrowSpr[forth];
+    }
+
     public void RenderScoreImage(Vector3 pos)
     {
         scoreImage.transform.position = pos;

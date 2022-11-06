@@ -54,8 +54,23 @@ public class CharacterMovement_1 : MonoBehaviour
     public float cur_ypos;
 
     public bool isDie;
+    public enum MyEventType { Normal, House, Die };
 
-    public bool anyEvent = false;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
+    public MyEventType myEvent = MyEventType.Normal;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
+
+    public GameObject CountManager;
+
+    public GameObject curHouse;
+
+    public float HouseTime;
+
+    public bool houseKeyCheck;
+
+    public int[] inputKey;
+
+    public int inputCount;
+
+    public GameObject uiManager;
 
     private void Awake()
     {
@@ -66,6 +81,7 @@ public class CharacterMovement_1 : MonoBehaviour
         anim = GetComponent<Animator>();
 
         wallManager_st = wallManger_ob.GetComponent<WallManager>();
+        inputKey = new int[3];
     }
 
     // Start is called before the first frame update
@@ -73,21 +89,30 @@ public class CharacterMovement_1 : MonoBehaviour
     {
         isDie = false;
 
+        houseKeyCheck = false;
+
+        inputCount = 0;
+
         main_Background.transform.position = new Vector3(0, 0, 0);
 
         audioSource = GetComponent<AudioSource>(); ////////점프 소리
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
-
+        CountManager = GameObject.FindWithTag("CountManager");
+        uiManager = GameObject.FindWithTag("UIManager");
         OtherBackgroundSetting();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!anyEvent)
+        if (myEvent != MyEventType.Die && !houseKeyCheck)
         {
             Jump();
+        }
+        else if (houseKeyCheck)
+        {
+            HouseKeyCheck();
         }
     }
     private void OnCollisionStay2D(Collision2D collision)
@@ -123,6 +148,13 @@ public class CharacterMovement_1 : MonoBehaviour
                 DieEvent();
                 return;
             }
+            else if(jumpArrow == 0 && myEvent == MyEventType.House)
+            {
+                HouseEvent();
+                Debug.Log("하우스 이벤트 실행");
+                return;
+            }
+
             Debug.Log("상단 이동");
             anim.SetBool("isJump",true);  ////애니메이션
             audioSource.Play();   /////////점프소리
@@ -156,6 +188,13 @@ public class CharacterMovement_1 : MonoBehaviour
                 DieEvent();
                 return;
             }
+            else if (jumpArrow == 1 && myEvent == MyEventType.House)
+            {
+                HouseEvent();
+                Debug.Log("하우스 이벤트 실행");
+                return;
+            }
+
             Debug.Log("우측 이동");
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
@@ -172,7 +211,6 @@ public class CharacterMovement_1 : MonoBehaviour
 
             MainBackgroundForward(); //배경
         }
-
         if (Input.GetKeyDown(KeyCode.DownArrow)) // 이동 - 하
         {
             if (jumpable != true)
@@ -187,6 +225,13 @@ public class CharacterMovement_1 : MonoBehaviour
                 DieEvent();
                 return;
             }
+            else if (jumpArrow == 0 && myEvent == MyEventType.House)
+            {
+                HouseEvent();
+                Debug.Log("하우스 이벤트 실행");
+                return;
+            }
+
             Debug.Log("하단 이동");
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
@@ -209,10 +254,172 @@ public class CharacterMovement_1 : MonoBehaviour
         }
     }
 
+    public void HouseEvent()
+    {
+        rd.gravityScale = 0.0f;
+        rd.velocity = Vector3.zero;
+        transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
+
+        CountManager.GetComponent<CountTimer>().ExecuteTimer(HouseTime);
+
+        myEvent = MyEventType.House;
+
+        houseKeyCheck = true;
+
+        curHouse = wallManager_st.destroyWall[1];
+
+        uiManager.GetComponent<UIManager>().RenderHouseArrow(
+            curHouse.GetComponent<House>().randomArrow[0], curHouse.GetComponent<House>().randomArrow[1],
+            curHouse.GetComponent<House>().randomArrow[2], curHouse.GetComponent<House>().myArrow);
+        
+    }
+    public void HouseKeyCheck()
+    {
+        if(CountManager.GetComponent<CountTimer>().TimerEnd && inputCount <3)
+        {
+            houseKeyCheck = false;
+            Debug.Log("timer end");
+            DieEvent();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Debug.Log("dd");
+            if (inputCount >= 3 && 0 == curHouse.GetComponent<House>().myArrow)
+            {
+                houseKeyCheck = false;
+                myEvent = MyEventType.Normal;
+
+                Debug.Log("house done");
+                inputCount = 0;
+
+                uiManager.GetComponent<UIManager>().HouseBGI.SetActive(false);
+
+                Debug.Log("상단 이동");
+                anim.SetBool("isJump", true);  ////애니메이션
+                audioSource.Play();   /////////점프소리
+
+                jumping = true;
+                rd.gravityScale = 1.5f;
+                rd.velocity = Vector3.zero;
+                transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
+                rd.AddForce(jumppower_u, ForceMode2D.Impulse);
+                wallManager_st.CheckInPlayer();
+                jumpable = false;
+                cur_xpos += wallManager_st.wallinterval_x;
+                cur_ypos += wallManager_st.wallinterval_y;
+                upCheck++; //배경
+                downCheck--;  //배경
+                rightCheck++;
+                MainBackgroundUp();  //배경
+                MainBackgroundForward();  //배경
+                return;
+            }
+            else if(inputCount < 3 && 0 == curHouse.GetComponent<House>().randomArrow[inputCount])
+            {
+                Debug.Log("key done");
+                inputCount++;
+                return;
+            }
+            else
+            {
+                Debug.Log("die");
+                DieEvent();
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (inputCount >= 3 && 1 == curHouse.GetComponent<House>().myArrow)
+            {
+                houseKeyCheck = false;
+                myEvent = MyEventType.Normal;
+
+                uiManager.GetComponent<UIManager>().HouseBGI.SetActive(false);
+
+                Debug.Log("house done");
+                inputCount = 0;
+
+                Debug.Log("우측 이동");
+                anim.SetBool("isJump", true);  ////애니메이션
+                audioSource.Play();   /////////점프소리
+
+                jumping = true;
+                rd.gravityScale = 1.5f;
+                rd.velocity = Vector3.zero;
+                transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
+                rd.AddForce(jumppower_r, ForceMode2D.Impulse);
+                wallManager_st.CheckInPlayer();
+                jumpable = false;
+                cur_xpos += wallManager_st.wallinterval_x;
+                rightCheck++;
+
+                MainBackgroundForward(); //배경
+                return;
+            }
+            else if (inputCount < 3 && 1 == curHouse.GetComponent<House>().randomArrow[inputCount])
+            {
+                Debug.Log("key done");
+                inputCount++;
+                return;
+            }
+            else
+            {
+                Debug.Log("die");
+                DieEvent();
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            if (inputCount >= 3 && 2 == curHouse.GetComponent<House>().myArrow)
+            {
+                houseKeyCheck = false;
+                myEvent = MyEventType.Normal;
+
+                uiManager.GetComponent<UIManager>().HouseBGI.SetActive(false);
+
+                Debug.Log("house done");
+                inputCount = 0;
+
+                Debug.Log("하단 이동");
+                anim.SetBool("isJump", true);  ////애니메이션
+                audioSource.Play();   /////////점프소리
+
+                jumping = true;
+                rd.gravityScale = 0.8f;
+                rd.velocity = Vector3.zero;
+                transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
+                rd.AddForce(jumppower_d, ForceMode2D.Impulse);
+                wallManager_st.CheckInPlayer();
+                jumpable = false;
+                cur_xpos += wallManager_st.wallinterval_x;
+                cur_ypos -= wallManager_st.wallinterval_y;
+
+                downCheck++; //배경
+                upCheck--; //배경
+                rightCheck++;
+                MainBackgroundDown(); //배경
+                MainBackgroundForward(); //배경
+                return;
+            }
+            if (inputCount < 3 && 2 == curHouse.GetComponent<House>().randomArrow[inputCount])
+            {
+                Debug.Log("key done");
+                inputCount++;
+                return;
+            }
+            else
+            {
+                Debug.Log("die");
+                DieEvent();
+            }
+
+        }
+    }
+
     public void DieEvent()
     {
         isDie = true;
-        anyEvent = true;
+        myEvent = MyEventType.Die;
         spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
         anim.SetBool("isDead", true);

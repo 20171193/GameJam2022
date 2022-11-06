@@ -31,8 +31,6 @@ public class WallManager : MonoBehaviour
 
     private int rand;   // 벽이 가르키는 방향 랜덤 값
 
-    public GameObject houseWall;
-
     // Player
     public GameObject Player;
 
@@ -72,13 +70,10 @@ public class WallManager : MonoBehaviour
     {
     }
 
-    public void UpdateInfo()
+    public void UpdateInfo(int dir)
     {
-        // 현재 구름이 가르키고 있는 방향
-        int dir = destroyWall[1].GetComponent<Wall>().myArrow;
-
         switch (dir)
-        {
+        { 
             case 0: // 다음 스폰위치 - 상
                 {
                     spawnWallPos = new Vector2(destroyWall[1].transform.position.x+ wallinterval_x, destroyWall[1].transform.position.y+1.0f);
@@ -110,32 +105,57 @@ public class WallManager : MonoBehaviour
 
     public void SpawnWall()
     {
-        // 기존에 생성한 벽이 있다면 삭제
-        if (destroyWall[0])
+        if (spawnCount >= spawnCount_house)
         {
-            Destroy(destroyWall[0]);
+            // 하우스 스폰
+            spawnCount = 0;
+            if (destroyWall[0])
+            {
+                Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
+                // UI 이벤트 호출
+                UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x, destroyWall[1].transform.position.y, 0.0f));
 
-            // 이펙트 전용 오브젝트 생성
-            Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
+                Destroy(destroyWall[1]);
 
-            // UI 이벤트 호출
-            UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x,destroyWall[1].transform.position.y, 0.0f));
+                System.Array.Clear(destroyWall, 0, destroyWall.Length);
+            }
+            destroyWall[0] = Instantiate(spawnWall[2], spawnWallPos, Quaternion.identity);
+            destroyWall[1] = Instantiate(spawnWall[3], spawnWallPos, Quaternion.identity);
+            
+            rand = Random.Range(0, 3);
 
-            Destroy(destroyWall[1]);
+            destroyWall[1].GetComponent<House>().myArrow = 0;   // 테스트 용 - 후에 rand 값 사용
 
-            System.Array.Clear(destroyWall, 0, destroyWall.Length);   
-
+            UpdateInfo(destroyWall[1].GetComponent<House>().myArrow);
         }
-        rand = Random.Range(0, 3);
+        else
+        { // 기존에 생성한 벽이 있다면 삭제
+            if (destroyWall[0])
+            {
+                Destroy(destroyWall[0]);
 
-        destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
-        destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
+                // 이펙트 전용 오브젝트 생성
+                Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
 
-        destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
-        destroyWall[1].GetComponent<Wall>().myArrow = rand;
+                // UI 이벤트 호출
+                UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x, destroyWall[1].transform.position.y, 0.0f));
 
-        spawnCount++;
+                Destroy(destroyWall[1]);
 
-        UpdateInfo();
+                System.Array.Clear(destroyWall, 0, destroyWall.Length);
+
+            }
+            rand = Random.Range(0, 3);
+
+            destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
+            destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
+
+            destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
+            destroyWall[1].GetComponent<Wall>().myArrow = rand;
+
+            spawnCount++;
+
+            UpdateInfo(destroyWall[1].GetComponent<Wall>().myArrow);
+        }
     }
 }

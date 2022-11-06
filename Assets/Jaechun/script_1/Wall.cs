@@ -106,24 +106,9 @@ public class Wall : MonoBehaviour
             }
         }
     }
-
-    //private void OnTriggerStay2D(Collider2D collision)
-    //{
-    //    //if(collision.gameObject.tag == "Player")
-    //    //{
-    //    //    player = collision.gameObject;
-    //    //    if (player.transform.position.x >= transform.position.x)
-    //    //    {
-    //    //        //Debug.Log("in trigger");
-    //    //        player.GetComponent<Rigidbody2D>().velocity = new Vector2(0, player.GetComponent<Rigidbody2D>().velocity.y);
-    //    //        player.transform.position = new Vector3(transform.position.x, player.transform.position.y, 0);
-    //    //        player.GetComponent<CharacterMovement_1>().jumpArrow = myArrow;
-    //    //    }
-    //    //}
-    //}
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" && tag != "EffectWall")
         {
             Debug.Log("exit trigger");
 
