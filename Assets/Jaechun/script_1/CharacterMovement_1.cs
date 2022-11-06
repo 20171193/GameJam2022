@@ -123,6 +123,7 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump",true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true; 
             rd.gravityScale = 1.5f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -155,6 +156,7 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true;
             rd.gravityScale = 1.5f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -185,10 +187,10 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true;
             rd.gravityScale = 0.8f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
-
             rd.AddForce(jumppower_d, ForceMode2D.Impulse);
             wallManager_st.CheckInPlayer();
             jumpable = false;
@@ -209,6 +211,7 @@ public class CharacterMovement_1 : MonoBehaviour
         anyEvent = true;
         spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
+        anim.SetBool("isDead", true);
         StartCoroutine(DieUI());
         //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
     }
@@ -216,7 +219,7 @@ public class CharacterMovement_1 : MonoBehaviour
     IEnumerator DieUI()
     {
         yield return new WaitForSeconds(0.5f);
-        Debug.Log("die");
+
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
     }

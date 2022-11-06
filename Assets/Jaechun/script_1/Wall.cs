@@ -130,9 +130,8 @@ public class Wall : MonoBehaviour
             player = collision.gameObject;
             //player.GetComponent<Rigidbody2D>().velocity = Vector3.down*2.0f;
 
-            if(player.transform.position.x == transform.position.x              // 플레이어가 벽 위에 있고
-                && transform.position.y + 2.5 >= player.transform.position.y)   // 벽에서 떨어지는 상황
-            {
+            if(transform.position.y+2.7 > player.transform.position.y)   // 벽에서 떨어지는 상황
+            {       
                 // 사망 이벤트 실행
                 // 후에 애니메이션 출력으로 대체
                 SetAlpha(false);
