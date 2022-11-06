@@ -7,6 +7,10 @@ public class CharacterMovement_1 : MonoBehaviour
     [SerializeField] GameObject main_Background; //캐릭터가 위치하는 배경
     [SerializeField] GameObject[] other_Background;  //메인 배경을 기준으로 둘러싸는 배경
 
+    public GameObject fadeOut;  // 페이드아웃
+    public GameObject deadMenu; // 결과 창
+    public GameObject menuTool; // 결과 창 타이틀 버튼
+
     private int upCheck = 0;
     private int downCheck = 0;
     private int rightCheck = 0;
@@ -218,12 +222,23 @@ public class CharacterMovement_1 : MonoBehaviour
 
     IEnumerator DieUI()
     {
-        yield return new WaitForSeconds(0.5f);
-
+        fadeOut.SetActive(true);
+        yield return new WaitForSeconds(1.0f);
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
+        UI_Pause();
+        Invoke("ToolOn", 0.8f);
     }
 
+    public void UI_Pause()
+    {
+        gameObject.SetActive(false);
+        deadMenu.gameObject.SetActive(true);
+    }
+    public void ToolOn()
+    {
+        menuTool.gameObject.SetActive(true);
+    }
 
 
     public void MainBackgroundForward()
