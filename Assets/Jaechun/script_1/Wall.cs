@@ -15,11 +15,17 @@ public class Wall : MonoBehaviour
 
     GameObject player;
 
-    private float intervalPr; 
+    private float intervalPr;
+
+    public Animator anim;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (tag == "EffectWall")
+        {
+            anim = gameObject.GetComponent<Animator>();
+        }
         spr = gameObject.GetComponent<SpriteRenderer>();
         col = gameObject.GetComponent<BoxCollider2D>();
 
@@ -27,9 +33,13 @@ public class Wall : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player");
 
-        if (tag != "StartWall")
+        if (tag != "StartWall" && tag != "EffectWall")
         {
             StartCoroutine(FadeWall());
+        }
+        else if(tag == "EffectWall")
+        {
+            DestroyEffect();
         }
     }
     IEnumerator FadeWall()
@@ -47,12 +57,15 @@ public class Wall : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        intervalPr = 1 - Mathf.Abs(0.2f * (transform.position.x - Mathf.Abs(player.transform.position.x)));
-
-        if(myAlpha >= 1.0f && tag != "StartWall")
+        if (tag != "EffectWall")
         {
-            col.enabled = true;
-            myAlpha = 0.99f;   // 후에 애니메이션 출력으로 변경
+            intervalPr = 1 - Mathf.Abs(0.2f * (transform.position.x - Mathf.Abs(player.transform.position.x)));
+
+            if (myAlpha >= 1.0f && tag != "StartWall")
+            {
+                col.enabled = true;
+                myAlpha = 0.99f;   // 후에 애니메이션 출력으로 변경
+            }
         }
     }
 
@@ -68,28 +81,46 @@ public class Wall : MonoBehaviour
         }
     }
 
+    public void DestroyEffect()
+    {
+        StartCoroutine(DestroyEffectWall());
+        spr.color = new Color(255.0f, 255.0f, 255.0f, 255.0f);
+        anim.Play("lsCloud_p", -1, 0.0f);
+    }
+    IEnumerator DestroyEffectWall()
+    {
+        yield return new WaitForSeconds(0.5f);
+        Destroy(gameObject);
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
-            player.GetComponent<Animator>().SetBool("isJump", false);
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if(collision.gameObject.tag == "Player")
         {
-            player = collision.gameObject;
-            if (player.transform.position.x >= transform.position.x)
+            if (!player.GetComponent<CharacterMovement_1>().isDie)
             {
-                Debug.Log("in trigger");
-                player.GetComponent<Rigidbody2D>().velocity = new Vector2(0, player.GetComponent<Rigidbody2D>().velocity.y);
-                player.transform.position = new Vector3(transform.position.x, player.transform.position.y, 0);
+                player.GetComponent<Animator>().SetBool("isJump", false);
                 player.GetComponent<CharacterMovement_1>().jumpable = true;
                 player.GetComponent<CharacterMovement_1>().jumpArrow = myArrow;
                 SetAlpha(true);
             }
         }
     }
+
+    //private void OnTriggerStay2D(Collider2D collision)
+    //{
+    //    //if(collision.gameObject.tag == "Player")
+    //    //{
+    //    //    player = collision.gameObject;
+    //    //    if (player.transform.position.x >= transform.position.x)
+    //    //    {
+    //    //        //Debug.Log("in trigger");
+    //    //        player.GetComponent<Rigidbody2D>().velocity = new Vector2(0, player.GetComponent<Rigidbody2D>().velocity.y);
+    //    //        player.transform.position = new Vector3(transform.position.x, player.transform.position.y, 0);
+    //    //        player.GetComponent<CharacterMovement_1>().jumpArrow = myArrow;
+    //    //    }
+    //    //}
+    //}
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
@@ -98,7 +129,6 @@ public class Wall : MonoBehaviour
 
             player = collision.gameObject;
             //player.GetComponent<Rigidbody2D>().velocity = Vector3.down*2.0f;
-            player.GetComponent<CharacterMovement_1>().jumpable = false;
 
             if(player.transform.position.x == transform.position.x              // 플레이어가 벽 위에 있고
                 && transform.position.y + 2.5 >= player.transform.position.y)   // 벽에서 떨어지는 상황
@@ -107,6 +137,7 @@ public class Wall : MonoBehaviour
                 // 후에 애니메이션 출력으로 대체
                 SetAlpha(false);
                 player.GetComponent<CharacterMovement_1>().DieEvent();
+                player.GetComponent<CharacterMovement_1>().jumpable = false;
             }
         }
     }

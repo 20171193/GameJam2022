@@ -49,6 +49,8 @@ public class CharacterMovement_1 : MonoBehaviour
     public float cur_xpos;
     public float cur_ypos;
 
+    public bool isDie;
+
     public bool anyEvent = false;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
 
     private void Awake()
@@ -65,6 +67,8 @@ public class CharacterMovement_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        isDie = false;
+
         main_Background.transform.position = new Vector3(0, 0, 0);
 
         audioSource = GetComponent<AudioSource>(); ////////점프 소리
@@ -101,7 +105,7 @@ public class CharacterMovement_1 : MonoBehaviour
     void Jump()
     {
         //Debug.Log(ScoreManager.getScore());
-        if (Input.GetKeyUp(KeyCode.UpArrow))     // 이동 - 상
+        if (Input.GetKeyDown(KeyCode.UpArrow))     // 이동 - 상
         {
             if (jumpable != true)
             {
@@ -133,7 +137,7 @@ public class CharacterMovement_1 : MonoBehaviour
             MainBackgroundUp();  //배경
             MainBackgroundForward();  //배경
         }
-        if (Input.GetKeyUp(KeyCode.RightArrow))  // 이동 - 중
+        if (Input.GetKeyDown(KeyCode.RightArrow))  // 이동 - 중
         {
             if (jumpable != true)
             {
@@ -158,12 +162,12 @@ public class CharacterMovement_1 : MonoBehaviour
             wallManager_st.CheckInPlayer();
             jumpable = false;
             cur_xpos += wallManager_st.wallinterval_x;
+            rightCheck++;
 
             MainBackgroundForward(); //배경
-            rightCheck++;
         }
 
-        if (Input.GetKeyUp(KeyCode.DownArrow)) // 이동 - 하
+        if (Input.GetKeyDown(KeyCode.DownArrow)) // 이동 - 하
         {
             if (jumpable != true)
             {
@@ -184,6 +188,7 @@ public class CharacterMovement_1 : MonoBehaviour
             rd.gravityScale = 0.8f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
+
             rd.AddForce(jumppower_d, ForceMode2D.Impulse);
             wallManager_st.CheckInPlayer();
             jumpable = false;
@@ -200,6 +205,7 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public void DieEvent()
     {
+        isDie = true;
         anyEvent = true;
         spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
@@ -209,7 +215,7 @@ public class CharacterMovement_1 : MonoBehaviour
 
     IEnumerator DieUI()
     {
-        yield return new WaitForSeconds(1.8f);
+        yield return new WaitForSeconds(0.5f);
         Debug.Log("die");
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
@@ -219,9 +225,6 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public void MainBackgroundForward()
     {
-        Debug.Log(transform.position.x % bgWidth);
-        Debug.Log(rightCheck);
-        Debug.Log((bgWidth / rightTileToTile) - 1);
         if (rightCheck >= (bgWidth / rightTileToTile) - 1)
         {
             if (transform.position.x % bgWidth < rightTileToTile)
@@ -243,6 +246,7 @@ public class CharacterMovement_1 : MonoBehaviour
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
                 OtherBackgroundSetting();
                 upCheck = 0;
+                rightCheck = 0;
                 downCheck = 0;
             }
         }
@@ -257,6 +261,7 @@ public class CharacterMovement_1 : MonoBehaviour
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
                 OtherBackgroundSetting();
                 downCheck = 0;
+                rightCheck = 0;
                 upCheck = 0;
             }
         }
