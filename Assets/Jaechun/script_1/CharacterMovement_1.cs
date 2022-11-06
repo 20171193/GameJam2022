@@ -10,6 +10,11 @@ public class CharacterMovement_1 : MonoBehaviour
     public GameObject fadeOut;  // 페이드아웃
     public GameObject deadMenu; // 결과 창
     public GameObject menuTool; // 결과 창 타이틀 버튼
+    public Bgm bgm; // bgm                                    ////////마지막 머지/////// 
+    public DeadBgm deadBgm; // deadBgm                        ////////마지막 머지/////// 
+    public ReadyGoSound readyGoSound; //                      ////////마지막 머지/////// 
+
+    private bool keyLock = true;                                 ////////마지막 머지/////// 
 
     private int upCheck = 0;
     private int downCheck = 0;
@@ -17,7 +22,7 @@ public class CharacterMovement_1 : MonoBehaviour
 
     Animator anim;
 
-    public AudioSource audioSource;      ////////점프 소리
+    public AudioSource jumpSound;      ////////점프 소리
 
     public float rightTileToTile; //오른쪽 타일 간격
     public float updownTileToTile; //위아래 타일 간격
@@ -75,9 +80,13 @@ public class CharacterMovement_1 : MonoBehaviour
 
         main_Background.transform.position = new Vector3(0, 0, 0);
 
-        audioSource = GetComponent<AudioSource>(); ////////점프 소리
+        jumpSound = GetComponent<AudioSource>(); ////////점프 소리
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
+
+        readyGoSound.PlayRG();
+
+        StartCoroutine(KeyUnLock()); 
 
         OtherBackgroundSetting();
     }
@@ -85,11 +94,21 @@ public class CharacterMovement_1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!anyEvent)
+        if (keyLock == false)                                        ////////마지막 머지///////    
         {
-            Jump();
+            if (!anyEvent)
+            {
+                Jump();
+            }
         }
     }
+
+    IEnumerator KeyUnLock()                                           ////////마지막 머지/////// 
+    {
+        yield return new WaitForSeconds(3f);
+        keyLock = false;
+    }                                                                 ////////마지막 머지/////// 
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "StartWall")
@@ -125,7 +144,7 @@ public class CharacterMovement_1 : MonoBehaviour
             }
             Debug.Log("상단 이동");
             anim.SetBool("isJump",true);  ////애니메이션
-            audioSource.Play();   /////////점프소리
+            jumpSound.Play();   /////////점프소리
 
             jumping = true; 
             rd.gravityScale = 1.5f;
@@ -158,7 +177,7 @@ public class CharacterMovement_1 : MonoBehaviour
             }
             Debug.Log("우측 이동");
             anim.SetBool("isJump", true);  ////애니메이션
-            audioSource.Play();   /////////점프소리
+            jumpSound.Play();   /////////점프소리
 
             jumping = true;
             rd.gravityScale = 1.5f;
@@ -189,7 +208,7 @@ public class CharacterMovement_1 : MonoBehaviour
             }
             Debug.Log("하단 이동");
             anim.SetBool("isJump", true);  ////애니메이션
-            audioSource.Play();   /////////점프소리
+            jumpSound.Play();   /////////점프소리
 
             jumping = true;
             rd.gravityScale = 0.8f;
@@ -222,8 +241,10 @@ public class CharacterMovement_1 : MonoBehaviour
 
     IEnumerator DieUI()
     {
+        bgm.StopPlayBgm();                                        ////////마지막 머지/////// 
+        deadBgm.PlayDeadBgm();                                     ////////마지막 머지/////// 
         fadeOut.SetActive(true);
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(0.5f);
         rd.gravityScale = 0.0f;
         rd.velocity = Vector3.zero;
         UI_Pause();

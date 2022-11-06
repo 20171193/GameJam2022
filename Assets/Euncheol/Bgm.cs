@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Bgm : MonoBehaviour
 {
-    public AudioSource audioSource;  
+    public AudioClip playBgm;
+    public AudioClip deadBgm;
+
+    public AudioSource audioSource;
 
     // Start is called before the first frame update
     void Start()
@@ -12,9 +15,8 @@ public class Bgm : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StopPlayBgm()
     {
-        
+        audioSource.Stop();
     }
 }

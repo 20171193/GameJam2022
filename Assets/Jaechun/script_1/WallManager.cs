@@ -10,6 +10,14 @@ public class WallManager : MonoBehaviour
     
     public GameObject[] destroyWall;    // 제거할 벽
 
+    public GameObject upEffect;    // 생성 이펙트     ////////마지막 머지/////// 
+    public GameObject rightEffect;    // 생성 이펙트     ////////마지막 머지/////// 
+    public GameObject downEffect;    // 생성 이펙트     ////////마지막 머지/////// 
+
+    public GameObject upCloud;    // 생성 이펙트     ////////마지막 머지/////// 
+    public GameObject rightCloud;    // 생성 이펙트     ////////마지막 머지/////// 
+    public GameObject downCloud;    // 생성 이펙트     ////////마지막 머지/////// 
+
     public GameObject effectWall;       // 제거 이펙트 전용 벽
 
     public GameObject[] startWall;      // 플레이어가 도약을 시작할 벽
@@ -110,6 +118,25 @@ public class WallManager : MonoBehaviour
 
     public void SpawnWall()
     {
+        rand = Random.Range(0, 3);
+        Vector2 newPos = new Vector2(spawnWallPos.x+0.2f, spawnWallPos.y + 1.3f); ;
+
+        if (rand == 0)
+        {
+            Instantiate(upEffect, newPos, Quaternion.identity);       ////////마지막 머지/////// 
+            Instantiate(upCloud, spawnWallPos, Quaternion.identity);
+        }
+        else if (rand == 1)
+        {
+            Instantiate(rightEffect, newPos, Quaternion.identity);       ////////마지막 머지/////// 
+            Instantiate(rightCloud, spawnWallPos, Quaternion.identity);
+        }
+        else if (rand == 2)
+        {
+            Instantiate(downEffect, newPos, Quaternion.identity);       ////////마지막 머지/////// 
+            Instantiate(downCloud, spawnWallPos, Quaternion.identity);
+        }
+
         // 기존에 생성한 벽이 있다면 삭제
         if (destroyWall[0])
         {
@@ -118,15 +145,15 @@ public class WallManager : MonoBehaviour
             // 이펙트 전용 오브젝트 생성
             Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
 
+
             // UI 이벤트 호출
-            UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x,destroyWall[1].transform.position.y, 0.0f));
+            UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x, destroyWall[1].transform.position.y, 0.0f));
 
             Destroy(destroyWall[1]);
 
-            System.Array.Clear(destroyWall, 0, destroyWall.Length);   
+            System.Array.Clear(destroyWall, 0, destroyWall.Length);
 
         }
-        rand = Random.Range(0, 3);
 
         destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
         destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);

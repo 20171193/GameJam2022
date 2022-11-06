@@ -59,7 +59,7 @@ public class Wall : MonoBehaviour
     {
         if (tag != "EffectWall")
         {
-            intervalPr = 1 - Mathf.Abs(0.2f * (transform.position.x - Mathf.Abs(player.transform.position.x)));
+            intervalPr = 0; //1 - Mathf.Abs(0.2f * (transform.position.x - Mathf.Abs(player.transform.position.x)));   ////////마지막 머지/////// 
 
             if (myAlpha >= 1.0f && tag != "StartWall")
             {
@@ -67,6 +67,7 @@ public class Wall : MonoBehaviour
                 myAlpha = 0.99f;   // 후에 애니메이션 출력으로 변경
             }
         }
+
     }
 
     public void SetAlpha(bool isIn)
