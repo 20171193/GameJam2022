@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class WallManager : MonoBehaviour
 {
-
     // Wall
     [Header("spawnWall 변수에 프리팹 할당-[0] : back, [1] : front")]
     public GameObject[] spawnWall;      // 생성할 벽
     
     public GameObject[] destroyWall;    // 제거할 벽
+
+    public GameObject effectWall;       // 제거 이펙트 전용 벽
 
     public GameObject[] startWall;      // 플레이어가 도약을 시작할 벽
 
@@ -23,7 +24,7 @@ public class WallManager : MonoBehaviour
     [SerializeField]
     private int spawnCount_house;   // house 벽 생성 조건
 
-    private int spawnCount;
+    public int spawnCount;
 
     [Header("벽 스프라이트 할당")]
     public Sprite[] wallSpr;    // 벽 이미지 (상, 우, 하, 집)
@@ -35,9 +36,16 @@ public class WallManager : MonoBehaviour
     // Player
     public GameObject Player;
 
+    [Header("스코어 매니져 할당")]
+    // 스코어 출력관련
+    public GameObject UIManager;
+
+    public int stage_score;
+
     private void Awake()
     {
-        
+        spawnCount = 0;
+        stage_score = 100;
     }
 
     // Start is called before the first frame update
@@ -56,6 +64,7 @@ public class WallManager : MonoBehaviour
         spawnWallPos = new Vector2(startWall[1].transform.position.x+5.0f, startWall[1].transform.position.y);
         Player.GetComponent<CharacterMovement_1>().cur_xpos = startWall[1].transform.position.x;
         Player.GetComponent<CharacterMovement_1>().cur_ypos = startWall[1].transform.position.y+2.9f;
+        //Time.timeScale = 0.5f;
     }
 
     // Update is called once per frame
@@ -93,45 +102,40 @@ public class WallManager : MonoBehaviour
 
     public void CheckInPlayer()
     {
+        UIManager.GetComponent<UIManager>().RenderScoreText(stage_score);
+        //Debug.Log(spawnCount);
         // 플레이어가 입력에 성공한 경우
         SpawnWall();
     }
 
     public void SpawnWall()
-    { 
+    {
         // 기존에 생성한 벽이 있다면 삭제
         if (destroyWall[0])
         {
             Destroy(destroyWall[0]);
+
+            // 이펙트 전용 오브젝트 생성
+            Instantiate(effectWall, destroyWall[1].transform.position, Quaternion.identity);
+
+            // UI 이벤트 호출
+            UIManager.GetComponent<UIManager>().RenderScoreImage(new Vector3(destroyWall[1].transform.position.x,destroyWall[1].transform.position.y, 0.0f));
+
             Destroy(destroyWall[1]);
 
-            System.Array.Clear(destroyWall, 0, destroyWall.Length);
+            System.Array.Clear(destroyWall, 0, destroyWall.Length);   
 
-            //Debug.Log("삭제");
         }
-        //if (spawnCount == spawnCount_house)
-        //{
-        //    spawnCount = 0;
-        //    destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
-        //    destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
+        rand = Random.Range(0, 3);
 
-        //    destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
-        //    destroyWall[1].GetComponent<Wall>().myArrow = rand;
-        //}
-        //else 
-        //{
-            rand = Random.Range(0, 3);
+        destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
+        destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
 
-            destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
-            destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);
+        destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
+        destroyWall[1].GetComponent<Wall>().myArrow = rand;
 
-            destroyWall[1].GetComponent<SpriteRenderer>().sprite = wallSpr[rand];
-            destroyWall[1].GetComponent<Wall>().myArrow = rand;
+        spawnCount++;
 
-            spawnCount++;
-
-            UpdateInfo();
-        //}
+        UpdateInfo();
     }
-
 }

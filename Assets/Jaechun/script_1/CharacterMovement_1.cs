@@ -7,9 +7,9 @@ public class CharacterMovement_1 : MonoBehaviour
     [SerializeField] GameObject main_Background; //캐릭터가 위치하는 배경
     [SerializeField] GameObject[] other_Background;  //메인 배경을 기준으로 둘러싸는 배경
 
-    public GameObject fadeOut; //////사망시 페이드 아웃
-    public GameObject deadMenu; //////결과창
-    public GameObject menuTool; //////결과창 타이틀과 버튼
+    public GameObject fadeOut;  // 페이드아웃
+    public GameObject deadMenu; // 결과 창
+    public GameObject menuTool; // 결과 창 타이틀 버튼
 
     private int upCheck = 0;
     private int downCheck = 0;
@@ -53,6 +53,8 @@ public class CharacterMovement_1 : MonoBehaviour
     public float cur_xpos;
     public float cur_ypos;
 
+    public bool isDie;
+
     public bool anyEvent = false;   // 이벤트가 실행 중 인지? (점프 입력 방지용)
 
     private void Awake()
@@ -69,6 +71,8 @@ public class CharacterMovement_1 : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        isDie = false;
+
         main_Background.transform.position = new Vector3(0, 0, 0);
 
         audioSource = GetComponent<AudioSource>(); ////////점프 소리
@@ -85,10 +89,7 @@ public class CharacterMovement_1 : MonoBehaviour
         {
             Jump();
         }
-
-
     }
-
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "StartWall")
@@ -108,7 +109,7 @@ public class CharacterMovement_1 : MonoBehaviour
     void Jump()
     {
         //Debug.Log(ScoreManager.getScore());
-        if (Input.GetKeyUp(KeyCode.UpArrow))     // 이동 - 상
+        if (Input.GetKeyDown(KeyCode.UpArrow))     // 이동 - 상
         {
             if (jumpable != true)
             {
@@ -126,6 +127,7 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump",true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true; 
             rd.gravityScale = 1.5f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -136,11 +138,11 @@ public class CharacterMovement_1 : MonoBehaviour
             cur_ypos += wallManager_st.wallinterval_y;
             upCheck++; //배경
             downCheck--;  //배경
-            rightCheck++;                //////////////////////
+            rightCheck++;
             MainBackgroundUp();  //배경
             MainBackgroundForward();  //배경
         }
-        if (Input.GetKeyUp(KeyCode.RightArrow))  // 이동 - 중
+        if (Input.GetKeyDown(KeyCode.RightArrow))  // 이동 - 중
         {
             if (jumpable != true)
             {
@@ -158,6 +160,7 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true;
             rd.gravityScale = 1.5f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -165,12 +168,12 @@ public class CharacterMovement_1 : MonoBehaviour
             wallManager_st.CheckInPlayer();
             jumpable = false;
             cur_xpos += wallManager_st.wallinterval_x;
+            rightCheck++;
 
-            rightCheck++;                         //////////////////////
             MainBackgroundForward(); //배경
         }
 
-        if (Input.GetKeyUp(KeyCode.DownArrow)) // 이동 - 하
+        if (Input.GetKeyDown(KeyCode.DownArrow)) // 이동 - 하
         {
             if (jumpable != true)
             {
@@ -188,6 +191,7 @@ public class CharacterMovement_1 : MonoBehaviour
             anim.SetBool("isJump", true);  ////애니메이션
             audioSource.Play();   /////////점프소리
 
+            jumping = true;
             rd.gravityScale = 0.8f;
             rd.velocity = Vector3.zero;
             transform.position = new Vector3(cur_xpos, cur_ypos, 0); // 점프 시작 위치 초기화
@@ -207,48 +211,38 @@ public class CharacterMovement_1 : MonoBehaviour
 
     public void DieEvent()
     {
+        isDie = true;
         anyEvent = true;
         spr.sprite = dieSp;
         rd.velocity = Vector3.zero;
+        anim.SetBool("isDead", true);
         StartCoroutine(DieUI());
-        fadeOut.gameObject.SetActive(true);      /////화면 어둡게 설정
-        anim.SetBool("isDead", true);            /////dead애니메이션
-        //Time.timeScale = 0;
-        Invoke("Pause", 1f);                    //////////////////////
         //tr.Translate(transform.position.x + 1.0f, transform.position.y + 1.0f, 0.0f);
     }
 
-    public void Pause()                                //////////////////////
+    IEnumerator DieUI()
     {
-        //Time.timeScale = 0f;
-        gameObject.SetActive(false);
-        deadMenu.gameObject.SetActive(true);
-        Invoke("ToolOn", 1f);
+        fadeOut.SetActive(true);
+        yield return new WaitForSeconds(1.0f);
+        rd.gravityScale = 0.0f;
+        rd.velocity = Vector3.zero;
+        UI_Pause();
+        Invoke("ToolOn", 0.8f);
     }
 
+    public void UI_Pause()
+    {
+        gameObject.SetActive(false);
+        deadMenu.gameObject.SetActive(true);
+    }
     public void ToolOn()
     {
         menuTool.gameObject.SetActive(true);
-    }                                                //////////////////////
-
-
-
-
-    IEnumerator DieUI()
-    {
-        yield return new WaitForSeconds(1f);          //값수정
-        Debug.Log("die");
-        rd.gravityScale = 0.0f;
-        rd.velocity = Vector3.zero;
     }
-
 
 
     public void MainBackgroundForward()
     {
-        Debug.Log(transform.position.x % bgWidth);
-        Debug.Log(rightCheck);
-        Debug.Log((bgWidth / rightTileToTile) - 1);
         if (rightCheck >= (bgWidth / rightTileToTile) - 1)
         {
             if (transform.position.x % bgWidth < rightTileToTile)
@@ -270,8 +264,8 @@ public class CharacterMovement_1 : MonoBehaviour
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y + bgHeight, 0);
                 OtherBackgroundSetting();
                 upCheck = 0;
-                downCheck = 0;
                 rightCheck = 0;
+                downCheck = 0;
             }
         }
     }
@@ -285,8 +279,8 @@ public class CharacterMovement_1 : MonoBehaviour
                 main_Background.transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
                 OtherBackgroundSetting();
                 downCheck = 0;
-                upCheck = 0;
                 rightCheck = 0;
+                upCheck = 0;
             }
         }
     }
@@ -297,6 +291,5 @@ public class CharacterMovement_1 : MonoBehaviour
         other_Background[2].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
         other_Background[3].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
         other_Background[4].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y - bgHeight, 0);
-        other_Background[5].transform.position = new Vector3(main_Background.transform.position.x + bgWidth*2, main_Background.transform.position.y, 0);             //////////////////////
-    }                                                                                                     
+    }
 }
