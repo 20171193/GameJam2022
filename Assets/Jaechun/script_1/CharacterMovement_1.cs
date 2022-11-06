@@ -297,5 +297,6 @@ public class CharacterMovement_1 : MonoBehaviour
         other_Background[2].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y, 0);
         other_Background[3].transform.position = new Vector3(main_Background.transform.position.x, main_Background.transform.position.y - bgHeight, 0);
         other_Background[4].transform.position = new Vector3(main_Background.transform.position.x + bgWidth, main_Background.transform.position.y - bgHeight, 0);
-    }
+        other_Background[5].transform.position = new Vector3(main_Background.transform.position.x + bgWidth*2, main_Background.transform.position.y, 0);
+    }                                                                                                     
 }
