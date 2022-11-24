@@ -67,6 +67,8 @@ public class House : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
+            player.GetComponent<CharacterMovement_1>().myEvent = CharacterMovement_1.MyEventType.Normal;
+
             Debug.Log("exit trigger");
 
             player = collision.gameObject;

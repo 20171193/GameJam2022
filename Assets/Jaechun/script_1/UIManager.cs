@@ -53,6 +53,5 @@ public class UIManager : MonoBehaviour
     {
         score_val += val;
         scoreText.text = score_val.ToString();
-        Debug.Log(score_val.ToString());
     }
 }

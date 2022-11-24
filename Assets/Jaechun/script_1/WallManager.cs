@@ -10,6 +10,14 @@ public class WallManager : MonoBehaviour
     
     public GameObject[] destroyWall;    // 제거할 벽
 
+    public GameObject upEffect;
+    public GameObject downEffect;
+    public GameObject rightEffect;
+
+    public GameObject upCloud;
+    public GameObject downCloud;    
+    public GameObject rightCloud;
+
     public GameObject effectWall;       // 제거 이펙트 전용 벽
 
     public GameObject[] startWall;      // 플레이어가 도약을 시작할 벽
@@ -105,6 +113,10 @@ public class WallManager : MonoBehaviour
 
     public void SpawnWall()
     {
+        rand = Random.Range(0, 3);
+
+        Vector2 arrowPos = new Vector2(spawnWallPos.x + 0.2f, spawnWallPos.y + 1.3f);
+
         if (spawnCount >= spawnCount_house)
         {
             // 하우스 스폰
@@ -120,14 +132,23 @@ public class WallManager : MonoBehaviour
                 System.Array.Clear(destroyWall, 0, destroyWall.Length);
             }
 
-            spawnWallPos = new Vector2(spawnWallPos.x, spawnWallPos.y - 1.1f);
-
             destroyWall[0] = Instantiate(spawnWall[2], spawnWallPos, Quaternion.identity);
             destroyWall[1] = Instantiate(spawnWall[3], spawnWallPos, Quaternion.identity);
             
-            rand = Random.Range(0, 3);
+            if (rand == 0)
+            {
+                Instantiate(upEffect, arrowPos, Quaternion.identity);
+            }
+            if (rand == 1)
+            {
+                Instantiate(rightEffect, arrowPos, Quaternion.identity);
+            }
+            if (rand == 2)
+            {
+                Instantiate(downEffect, arrowPos, Quaternion.identity);
+            }
 
-            destroyWall[1].GetComponent<House>().myArrow = 0;   // 테스트 용 - 후에 rand 값 사용
+            destroyWall[1].GetComponent<House>().myArrow = rand;   // 테스트 용 - 후에 rand 값 사용
 
             UpdateInfo(destroyWall[1].GetComponent<House>().myArrow);
         }
@@ -148,7 +169,21 @@ public class WallManager : MonoBehaviour
                 System.Array.Clear(destroyWall, 0, destroyWall.Length);
 
             }
-            rand = Random.Range(0, 3);
+            if(rand == 0)
+            {
+                Instantiate(upEffect, arrowPos, Quaternion.identity);
+                Instantiate(upCloud, spawnWallPos, Quaternion.identity);
+            }
+            if (rand == 1)
+            {
+                Instantiate(rightEffect, arrowPos, Quaternion.identity);
+                Instantiate(rightCloud, spawnWallPos, Quaternion.identity);
+            }
+            if (rand == 2)
+            {
+                Instantiate(downEffect, arrowPos, Quaternion.identity);
+                Instantiate(downCloud, spawnWallPos, Quaternion.identity);
+            }
 
             destroyWall[0] = Instantiate(spawnWall[0], spawnWallPos, Quaternion.identity);
             destroyWall[1] = Instantiate(spawnWall[1], spawnWallPos, Quaternion.identity);

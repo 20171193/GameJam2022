@@ -12,6 +12,7 @@ TagManager:
   - EffectWall
   - UIManager
   - CountManager
+  - HouseWall
   layers:
   - Default
   - TransparentFX

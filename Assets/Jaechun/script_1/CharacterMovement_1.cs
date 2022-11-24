@@ -10,6 +10,11 @@ public class CharacterMovement_1 : MonoBehaviour
     public GameObject fadeOut;  // 페이드아웃
     public GameObject deadMenu; // 결과 창
     public GameObject menuTool; // 결과 창 타이틀 버튼
+    public Bgm bgm;
+    public DeadBgm deadBgm;
+    public ReadyGoSound readyGoSound;
+
+    private bool keyLock = true;
 
     private int upCheck = 0;
     private int downCheck = 0;
@@ -99,22 +104,37 @@ public class CharacterMovement_1 : MonoBehaviour
         bgWidth = main_Background.GetComponent<SpriteRenderer>().bounds.size.x;
         bgHeight = main_Background.GetComponent<SpriteRenderer>().bounds.size.y;
         CountManager = GameObject.FindWithTag("CountManager");
-        uiManager = GameObject.FindWithTag("UIManager");
+        //uiManager = GameObject.FindWithTag("UIManager");
+
+        readyGoSound.PlayRG();
+
+        StartCoroutine(KeyUnLock());
+
         OtherBackgroundSetting();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (myEvent != MyEventType.Die && !houseKeyCheck)
+        if (keyLock == false)
         {
-            Jump();
-        }
-        else if (houseKeyCheck)
-        {
-            HouseKeyCheck();
+            if (myEvent != MyEventType.Die && !houseKeyCheck)
+            {
+                Jump();
+            }
+            else if (houseKeyCheck)
+            {
+                HouseKeyCheck();
+            }
         }
     }
+
+    IEnumerator KeyUnLock()
+    {
+        yield return new WaitForSeconds(3f);
+        keyLock = false;
+    }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if(collision.gameObject.tag == "StartWall")
@@ -225,7 +245,7 @@ public class CharacterMovement_1 : MonoBehaviour
                 DieEvent();
                 return;
             }
-            else if (jumpArrow == 0 && myEvent == MyEventType.House)
+            else if (jumpArrow == 2 && myEvent == MyEventType.House)
             {
                 HouseEvent();
                 Debug.Log("하우스 이벤트 실행");
@@ -266,11 +286,11 @@ public class CharacterMovement_1 : MonoBehaviour
 
         houseKeyCheck = true;
 
-        curHouse = wallManager_st.destroyWall[1];
+        curHouse = wallManager_st.destroyWall[1]; 
 
-        uiManager.GetComponent<UIManager>().RenderHouseArrow(
-            curHouse.GetComponent<House>().randomArrow[0], curHouse.GetComponent<House>().randomArrow[1],
-            curHouse.GetComponent<House>().randomArrow[2], curHouse.GetComponent<House>().myArrow);
+        Debug.Log(curHouse);
+
+        uiManager.GetComponent<UIManager>().RenderHouseArrow(curHouse.GetComponent<House>().randomArrow[0], curHouse.GetComponent<House>().randomArrow[1],curHouse.GetComponent<House>().randomArrow[2], curHouse.GetComponent<House>().myArrow);
 
         
     }
@@ -290,7 +310,7 @@ public class CharacterMovement_1 : MonoBehaviour
             {
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
-
+                uiManager.GetComponent<UIManager>().RenderScoreText(300);
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
                 
@@ -339,6 +359,7 @@ public class CharacterMovement_1 : MonoBehaviour
             {
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+                uiManager.GetComponent<UIManager>().RenderScoreText(300);
 
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
@@ -386,6 +407,7 @@ public class CharacterMovement_1 : MonoBehaviour
             {
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<AudioSource>().Play();
                 uiManager.GetComponent<UIManager>().arrowimg[inputCount].GetComponent<Animator>().Play("InArrow", -1, 0.0f);
+                uiManager.GetComponent<UIManager>().RenderScoreText(300);
 
                 houseKeyCheck = false;
                 myEvent = MyEventType.Normal;
@@ -447,6 +469,8 @@ public class CharacterMovement_1 : MonoBehaviour
 
     IEnumerator DieUI()
     {
+        bgm.StopPlayBgm();
+        deadBgm.PlayDeadBgm();
         fadeOut.SetActive(true);
         yield return new WaitForSeconds(1.0f);
         rd.gravityScale = 0.0f;
